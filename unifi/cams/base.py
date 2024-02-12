@@ -929,9 +929,10 @@ class UnifiCamBase(metaclass=ABCMeta):
             source = await self.get_stream_source(stream_index)
             cmd = (
                 "ffmpeg -nostdin -loglevel error -y"
+                f" {self.get_extra_ffmpeg_args(stream_index)}"
                 f" {self.get_base_ffmpeg_args(stream_index)} -rtsp_transport"
                 f' {self.args.rtsp_transport} -i "{source}"'
-                f" {self.get_extra_ffmpeg_args(stream_index)} -metadata"
+                f" -metadata"
                 f" streamName={stream_name} -f flv - | {sys.executable} -m"
                 " unifi.clock_sync"
                 f" {'--write-timestamps' if self._needs_flv_timestamps else ''} | nc"
