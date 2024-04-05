@@ -50,8 +50,6 @@ class UnifiCamBase(metaclass=ABCMeta):
         self._session: Optional[websockets.legacy.client.WebSocketClientProtocol] = None
         atexit.register(self.close_streams)
 
-        self._needs_flv_timestamps: bool = False
-
     @classmethod
     def add_parser(cls, parser: argparse.ArgumentParser) -> None:
         parser.add_argument(
@@ -65,6 +63,12 @@ class UnifiCamBase(metaclass=ABCMeta):
             default="tcp",
             choices=["tcp", "udp", "http", "udp_multicast"],
             help="RTSP transport protocol used by stream",
+        )
+        parser.add_argument(
+            "--timestamp-modifier",
+            type=int,
+            default="90",
+            help="Modify the timestamp correction factor (default: 90)",
         )
 
     async def _run(self, ws) -> None:
@@ -257,12 +261,7 @@ class UnifiCamBase(metaclass=ABCMeta):
         )
 
     async def process_hello(self, msg: AVClientRequest) -> None:
-        controller_version = packaging.version.parse(
-            msg["payload"].get("controllerVersion")
-        )
-        self._needs_flv_timestamps = controller_version >= packaging.version.parse(
-            "1.21.4"
-        )
+        pass
 
     async def process_param_agreement(self, msg: AVClientRequest) -> AVClientResponse:
         return self.gen_response(
@@ -433,15 +432,17 @@ class UnifiCamBase(metaclass=ABCMeta):
                         "N": 30,
                         "avSerializer": {
                             "destinations": vid_dst["video1"],
-                            "parameters": None
-                            if "video1" not in self._streams
-                            else {
-                                "audioId": None,
-                                "streamName": self._streams["video1"],
-                                "suppressAudio": None,
-                                "suppressVideo": None,
-                                "videoId": None,
-                            },
+                            "parameters": (
+                                None
+                                if "video1" not in self._streams
+                                else {
+                                    "audioId": None,
+                                    "streamName": self._streams["video1"],
+                                    "suppressAudio": None,
+                                    "suppressVideo": None,
+                                    "videoId": None,
+                                }
+                            ),
                             "type": "extendedFlv",
                         },
                         "bitRateCbrAvg": 1400000,
@@ -492,15 +493,17 @@ class UnifiCamBase(metaclass=ABCMeta):
                         "N": 30,
                         "avSerializer": {
                             "destinations": vid_dst["video2"],
-                            "parameters": None
-                            if "video2" not in self._streams
-                            else {
-                                "audioId": None,
-                                "streamName": self._streams["video2"],
-                                "suppressAudio": None,
-                                "suppressVideo": None,
-                                "videoId": None,
-                            },
+                            "parameters": (
+                                None
+                                if "video2" not in self._streams
+                                else {
+                                    "audioId": None,
+                                    "streamName": self._streams["video2"],
+                                    "suppressAudio": None,
+                                    "suppressVideo": None,
+                                    "videoId": None,
+                                }
+                            ),
                             "type": "extendedFlv",
                         },
                         "bitRateCbrAvg": 500000,
@@ -552,15 +555,17 @@ class UnifiCamBase(metaclass=ABCMeta):
                         "N": 30,
                         "avSerializer": {
                             "destinations": vid_dst["video3"],
-                            "parameters": None
-                            if "video3" not in self._streams
-                            else {
-                                "audioId": None,
-                                "streamName": self._streams["video3"],
-                                "suppressAudio": None,
-                                "suppressVideo": None,
-                                "videoId": None,
-                            },
+                            "parameters": (
+                                None
+                                if "video3" not in self._streams
+                                else {
+                                    "audioId": None,
+                                    "streamName": self._streams["video3"],
+                                    "suppressAudio": None,
+                                    "suppressVideo": None,
+                                    "videoId": None,
+                                }
+                            ),
                             "type": "extendedFlv",
                         },
                         "bitRateCbrAvg": 300000,
@@ -935,7 +940,7 @@ class UnifiCamBase(metaclass=ABCMeta):
                 f" -metadata"
                 f" streamName={stream_name} -f flv - | {sys.executable} -m"
                 " unifi.clock_sync"
-                f" {'--write-timestamps' if self._needs_flv_timestamps else ''} | nc"
+                f" --timestamp-modifier {self.args.timestamp_modifier} | nc"
                 f" {destination[0]} {destination[1]}"
             )
 
