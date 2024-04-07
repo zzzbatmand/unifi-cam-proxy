@@ -7,8 +7,8 @@ from pathlib import Path
 from typing import Any, Optional
 
 import backoff
-from aiomqtt import Client
-from aiomqtt.exceptions import MqttError
+from asyncio_mqtt import Client
+from asyncio_mqtt.error import MqttError
 
 from unifi.cams.base import SmartDetectObjectType
 from unifi.cams.rtsp import RTSPCam
@@ -117,7 +117,6 @@ class FrigateCam(RTSPCam):
                     elif (
                         self.event_id == frigate_msg["after"]["id"]
                         and frigate_msg["type"] == "end"
-                        and self.event_snapshot_ready
                     ):
                         # Wait for the best snapshot to be ready before
                         # ending the motion event
@@ -141,7 +140,6 @@ class FrigateCam(RTSPCam):
                     self.event_id
                     and not message.retain
                     and message.topic == topic_fmt.format(self.event_label)
-                    and self.event_snapshot_ready
                 ):
                     f = tempfile.NamedTemporaryFile()
                     f.write(message.payload)
