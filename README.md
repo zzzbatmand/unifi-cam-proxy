@@ -19,6 +19,8 @@ Things that work:
 
 View the documentation at <https://unifi-cam-proxy.com>
 
+Replace the `image: ...` line in `docker-compose.yml` with `build: https://github.com/zacharee/unifi-cam-proxy.git`.
+
 ## Donations
 
 If you would like to make a donation to support development, please use [Github Sponsors](https://github.com/sponsors/keshavdv).
