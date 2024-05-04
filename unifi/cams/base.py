@@ -964,7 +964,7 @@ class UnifiCamBase(metaclass=ABCMeta):
                 f"Spawning ffmpeg for {stream_index} ({stream_name}): {cmd}"
             )
             self._ffmpeg_handles[stream_index] = subprocess.Popen(
-                cmd, stdout=subprocess.DEVNULL, shell=True
+                cmd, stdout=subprocess.STDOUT, stderr=subprocess.STDOUT, shell=True,
             )
 
     def stop_video_stream(self, stream_index: str):
