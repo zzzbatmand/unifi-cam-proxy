@@ -75,6 +75,11 @@ class UnifiCamBase(metaclass=ABCMeta):
             default="90",
             help="Modify the timestamp correction factor (default: 90)",
         )
+        parser.add_argument(
+            "--loglevel",
+            default="error",
+            choices=["trace", "debug", "verbose", "info", "warning", "error", "fatal", "panic", "quiet"]
+        )
 
     async def _run(self, ws) -> None:
         self._session = ws
@@ -947,7 +952,7 @@ class UnifiCamBase(metaclass=ABCMeta):
         if not has_spawned or is_dead:
             source = await self.get_stream_source(stream_index)
             cmd = (
-                "ffmpeg -nostdin -loglevel error -y"
+                f"ffmpeg -nostdin -loglevel level+{self.args.loglevel} -y"
                 f" {self.get_base_ffmpeg_args(stream_index)} -rtsp_transport"
                 f' {self.args.rtsp_transport} -i "{source}"'
                 f" {self.get_extra_ffmpeg_args(stream_index)} -metadata"
