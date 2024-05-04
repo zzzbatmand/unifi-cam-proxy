@@ -26,6 +26,7 @@ class TapoCam(UnifiCamBase):
         self.ptz_enabled = False
         self.cam = None
 
+        # noinspection PyBroadException
         try:
             self.cam = Tapo(self.args.ip, self.args.username, self.args.password)
             self.cam.getMotorCapability()
@@ -115,7 +116,6 @@ class TapoCam(UnifiCamBase):
             if int(options["contrast"]) < 20:
                 self.logger.info("Moving left")
                 self.cam.moveMotor(-10, 0)
-
 
     async def run(self) -> None:
         if self.ptz_enabled:
