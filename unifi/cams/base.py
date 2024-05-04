@@ -8,11 +8,11 @@ import subprocess
 import sys
 import tempfile
 import time
-import urllib3
 from abc import ABCMeta, abstractmethod
 from enum import Enum
 from pathlib import Path
 from typing import Any, Optional
+from urllib.parse import urlparse
 
 import aiohttp
 import websockets
@@ -364,7 +364,7 @@ class UnifiCamBase(metaclass=ABCMeta):
                                 "streamName"
                             ]
                             try:
-                                host, port = urllib3.util.url.parse_url(
+                                host, port = urlparse(
                                     v["avSerializer"]["destinations"][0]
                                 ).netloc.split(":")
                                 await self.start_video_stream(
