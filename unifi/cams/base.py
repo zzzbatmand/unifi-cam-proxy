@@ -8,7 +8,7 @@ import subprocess
 import sys
 import tempfile
 import time
-import urllib
+import urllib3
 from abc import ABCMeta, abstractmethod
 from enum import Enum
 from pathlib import Path
@@ -364,7 +364,7 @@ class UnifiCamBase(metaclass=ABCMeta):
                                 "streamName"
                             ]
                             try:
-                                host, port = urllib.parse.urlparse(
+                                host, port = urllib3.util.url.parse_url(
                                     v["avSerializer"]["destinations"][0]
                                 ).netloc.split(":")
                                 await self.start_video_stream(
@@ -818,6 +818,7 @@ class UnifiCamBase(metaclass=ABCMeta):
                 "features": {},
             },
         )
+
     async def process_continuous_move(self, msg: AVClientRequest) -> None:
         return
 
@@ -957,7 +958,7 @@ class UnifiCamBase(metaclass=ABCMeta):
             )
 
             if is_dead:
-                self.logger.warn(f"Previous ffmpeg process for {stream_index} died.")
+                self.logger.warning(f"Previous ffmpeg process for {stream_index} died.")
 
             self.logger.info(
                 f"Spawning ffmpeg for {stream_index} ({stream_name}): {cmd}"
