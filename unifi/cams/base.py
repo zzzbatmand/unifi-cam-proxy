@@ -59,6 +59,12 @@ class UnifiCamBase(metaclass=ABCMeta):
             help="Transcoding args for `ffmpeg -i <src> <args> <dst>`",
         )
         parser.add_argument(
+            "--ffmpeg-base-args",
+            "-b",
+            help="Base args for `ffmpeg <base_args> -i <src> <args> <dst>",
+            type=str,
+        )
+        parser.add_argument(
             "--rtsp-transport",
             default="tcp",
             choices=["tcp", "udp", "http", "udp_multicast"],
@@ -910,6 +916,9 @@ class UnifiCamBase(metaclass=ABCMeta):
         return False
 
     def get_base_ffmpeg_args(self, stream_index: str = "") -> str:
+        if self.args.ffmpeg_base_args is not None:
+            return self.args.ffmpeg_base_args
+
         base_args = [
             "-avoid_negative_ts",
             "make_zero",
