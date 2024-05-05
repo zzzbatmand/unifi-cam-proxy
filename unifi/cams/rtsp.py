@@ -53,7 +53,7 @@ class RTSPCam(UnifiCamBase):
     def start_snapshot_stream(self) -> None:
         if not self.snapshot_stream or self.snapshot_stream.poll() is not None:
             cmd = (
-                f"ffmpeg -loglevel level+{self.args.loglevel} "
+                f"AV_LOG_FORCE_NOCOLOR=1 ffmpeg -loglevel level+{self.args.loglevel} "
                 f"-nostdin -y -re -rtsp_transport {self.args.rtsp_transport} "
                 f'-i "{self.args.source[-1]}" '
                 "-r 1 "

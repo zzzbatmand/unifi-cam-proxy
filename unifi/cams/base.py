@@ -952,7 +952,7 @@ class UnifiCamBase(metaclass=ABCMeta):
         if not has_spawned or is_dead:
             source = await self.get_stream_source(stream_index)
             cmd = (
-                f"ffmpeg -nostdin -loglevel level+{self.args.loglevel} -y"
+                f"AV_LOG_FORCE_NOCOLOR=1 ffmpeg -nostdin -loglevel level+{self.args.loglevel} -y"
                 f" {self.get_base_ffmpeg_args(stream_index)} -rtsp_transport"
                 f' {self.args.rtsp_transport} -i "{source}"'
                 f" {self.get_extra_ffmpeg_args(stream_index)} -metadata"
