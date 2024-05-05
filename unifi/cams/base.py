@@ -959,7 +959,7 @@ class UnifiCamBase(metaclass=ABCMeta):
             source = await self.get_stream_source(stream_index)
             cmd = (
                 f"AV_LOG_FORCE_NOCOLOR=1 ffmpeg -nostdin -loglevel level+{self.args.loglevel} -y"
-                f" {self.get_base_ffmpeg_args(stream_index)} -re -rtsp_transport"
+                f" {self.get_base_ffmpeg_args(stream_index)} -rtsp_transport"
                 f' {self.args.rtsp_transport} -i "{source}"'
                 f" {self.get_extra_ffmpeg_args(stream_index)} -metadata"
                 f" streamName={stream_name} -f {self.args.format} - | {sys.executable} -m"
