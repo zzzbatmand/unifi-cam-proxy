@@ -78,7 +78,8 @@ class TapoCam(UnifiCamBase):
     def start_snapshot_stream(self) -> None:
         if not self.snapshot_stream or self.snapshot_stream.poll() is not None:
             cmd = (
-                f"ffmpeg -nostdin -y -re -rtsp_transport {self.args.rtsp_transport} "
+                f"ffmpeg -loglevel level+{self.args.loglevel} "
+                f"-nostdin -y -re -rtsp_transport {self.args.rtsp_transport} "
                 f'-i "{self.stream_source["video3"]}" '
                 "-r 1 "
                 f"-update 1 {self.snapshot_dir}/screen.jpg"
