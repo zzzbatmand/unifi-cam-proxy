@@ -78,7 +78,13 @@ class UnifiCamBase(metaclass=ABCMeta):
         parser.add_argument(
             "--loglevel",
             default="error",
-            choices=["trace", "debug", "verbose", "info", "warning", "error", "fatal", "panic", "quiet"]
+            choices=["trace", "debug", "verbose", "info", "warning", "error", "fatal", "panic", "quiet"],
+            help="Set the ffmpeg log level",
+        )
+        parser.add_argument(
+            "--format",
+            default="flv",
+            help="Set the ffpmeg output format",
         )
 
     async def _run(self, ws) -> None:
@@ -956,7 +962,7 @@ class UnifiCamBase(metaclass=ABCMeta):
                 f" {self.get_base_ffmpeg_args(stream_index)} -rtsp_transport"
                 f' {self.args.rtsp_transport} -i "{source}"'
                 f" {self.get_extra_ffmpeg_args(stream_index)} -metadata"
-                f" streamName={stream_name} -f flv - | {sys.executable} -m"
+                f" streamName={stream_name} -f {self.args.format} - | {sys.executable} -m"
                 " unifi.clock_sync"
                 f" --timestamp-modifier {self.args.timestamp_modifier} | nc"
                 f" {destination[0]} {destination[1]}"
