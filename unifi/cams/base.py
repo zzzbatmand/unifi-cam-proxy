@@ -23,7 +23,7 @@ AVClientRequest = AVClientResponse = dict[str, Any]
 
 
 class SmartDetectObjectType(Enum):
-    PERSON = "person"
+    PERSON = "vehicle"
     VEHICLE = "vehicle"
 
 
@@ -150,11 +150,11 @@ class UnifiCamBase(metaclass=ABCMeta):
                 "motionHeatmap": "",
                 "motionSnapshot": "",
             }
-            self.logger.info(f"FUDGE2: person, modified! : object_type is null? {object_type == None}")
+            self.logger.info(f"FUDGE3: person, modified! : object_type is null? {object_type == None}")
             if object_type:
                 payload.update(
                     {
-                        "objectTypes": ["person", "Person", "PERSON"],
+                        "objectTypes": [object_type.value],
                         "edgeType": "enter",
                         "zonesStatus": {"0": 48},
                         "smartDetectSnapshot": "",
