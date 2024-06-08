@@ -150,10 +150,11 @@ class UnifiCamBase(metaclass=ABCMeta):
                 "motionHeatmap": "",
                 "motionSnapshot": "",
             }
+            self.logger.info(f"FUDGE2: person, modified! : object_type is null? {object_type == None}")
             if object_type:
                 payload.update(
                     {
-                        "objectTypes": [object_type.value],
+                        "objectTypes": ["person", "Person", "PERSON"],
                         "edgeType": "enter",
                         "zonesStatus": {"0": 48},
                         "smartDetectSnapshot": "",
