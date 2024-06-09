@@ -23,7 +23,7 @@ AVClientRequest = AVClientResponse = dict[str, Any]
 
 
 class SmartDetectObjectType(Enum):
-    PERSON = "vehicle"
+    PERSON = "person"
     VEHICLE = "vehicle"
 
 
@@ -150,13 +150,13 @@ class UnifiCamBase(metaclass=ABCMeta):
                 "motionHeatmap": "",
                 "motionSnapshot": "",
             }
-            self.logger.info(f"FUDGE3: person, modified! : object_type is null? {object_type == None}")
+            self.logger.info(f"FUDGE4: person, modified! : object_type is null? {object_type == None}")
             if object_type:
                 payload.update(
                     {
                         "objectTypes": [object_type.value],
                         "edgeType": "enter",
-                        "zonesStatus": {"0": 48},
+                        "zonesStatus": {"0": {"level": 48}},
                         "smartDetectSnapshot": "",
                     }
                 )
@@ -208,7 +208,7 @@ class UnifiCamBase(metaclass=ABCMeta):
                     {
                         "objectTypes": [motion_object_type.value],
                         "edgeType": "leave",
-                        "zonesStatus": {"0": 48},
+                        "zonesStatus": {"0": {"level": 48}},
                         "smartDetectSnapshot": "motionsnap.jpg",
                     }
                 )
@@ -704,6 +704,19 @@ class UnifiCamBase(metaclass=ABCMeta):
             },
         )
 
+    async def process_system_status(self, msg: AVClientRequest) -> AVClientResponse:
+        return self.gen_response(
+            "GetSystemStats",
+            msg["messageId"],
+            {
+                "network": {
+                    # TODO: Do theese actually need to be more than 0?
+                    "bytesRx": 0,
+                    "bytesTx": 0,
+                }
+            },
+        )
+
     async def process_sound_led_settings(
         self, msg: AVClientRequest
     ) -> AVClientResponse:
@@ -896,6 +909,8 @@ class UnifiCamBase(metaclass=ABCMeta):
             res = await self.process_osd_settings(m)
         elif fn == "NetworkStatus":
             res = await self.process_network_status(m)
+        elif fn == "GetSystemStats":
+            res = await self.process_system_status(m)
         elif fn == "AnalyticsTest":
             res = self.gen_response("AnalyticsTest", response_to=m["messageId"])
         elif fn == "ChangeSoundLedSettings":
