@@ -913,6 +913,14 @@ class UnifiCamBase(metaclass=ABCMeta):
             res = await self.process_system_status(m)
         elif fn == "AnalyticsTest":
             res = self.gen_response("AnalyticsTest", response_to=m["messageId"])
+
+        elif fn == "SmartMotionTest":
+            res = self.gen_response("SmartMotionTest", response_to=m["messageId"])
+        elif fn == "ChangeAudioEventsSettings":
+            res = self.gen_response("ChangeAudioEventsSettings", response_to=m["messageId"])
+        elif fn == "ChangeSmartMotionSettings":
+            res = self.gen_response("ChangeSmartMotionSettings", response_to=m["messageId"])
+
         elif fn == "ChangeSoundLedSettings":
             res = await self.process_sound_led_settings(m)
         elif fn == "ChangeIspSettings":
