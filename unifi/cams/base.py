@@ -40,6 +40,10 @@ class UnifiCamBase(metaclass=ABCMeta):
         self._motion_event_ts: Optional[float] = None
         self._motion_object_type: Optional[SmartDetectObjectType] = None
         self._ffmpeg_handles: dict[str, subprocess.Popen] = {}
+        
+        # Set up rx/tx variables
+        self._rx: int = 0
+        self._tx: int = 0
 
         # Set up ssl context for requests
         self._ssl_context = ssl.create_default_context()
@@ -710,9 +714,8 @@ class UnifiCamBase(metaclass=ABCMeta):
             msg["messageId"],
             {
                 "network": {
-                    # TODO: Do theese actually need to be more than 0?
-                    "bytesRx": 0,
-                    "bytesTx": 0,
+                    "bytesRx": self._rx,
+                    "bytesTx": self._tx,
                 }
             },
         )
@@ -867,11 +870,16 @@ class UnifiCamBase(metaclass=ABCMeta):
 
     async def send(self, msg: AVClientRequest) -> None:
         self.logger.debug(f"Sending: {msg}")
+        data = json.dumps(msg)
+        # Update tx.
+        self._tx += len(msg)
         ws = self._session
         if ws:
-            await ws.send(json.dumps(msg).encode())
+            await ws.send(data.encode())
 
     async def process(self, msg: bytes) -> bool:
+        # Update rx.
+        self._rx += len(msg)
         m = json.loads(msg)
         fn = m["functionName"]
 
