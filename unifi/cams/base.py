@@ -938,6 +938,7 @@ class UnifiCamBase(metaclass=ABCMeta):
             res = await self.process_continuous_move(m)
 
         if res is not None:
+            self.logger.debug(f"Message response contents: {res}")
             await self.send(res)
 
         return False
